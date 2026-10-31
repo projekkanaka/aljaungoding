@@ -2,7 +2,7 @@ PEDOMAN REKONSTRUKSI GIT HISTORY BERSAMA KITA Versi ringkas manusiawi, update 17
 
 Tujuan: Buat ulang history commit hackathon secara bertahap, rapi, terlihat natural seperti kerja manusia, siap presentasi juri dan siap deploy Vercel. File ini siap salin. Salin satu blok PROMPT 00 sampai 20 ke agent, agent wajib eksekusi via shell tanpa bertanya lagi.
 
-Acuan: plan docs HACKATHON COMMIT GUIDE credential plan docs credential md berisi PAT GitHub plus token Vercel plus URL repo aturan AGENTS md di source: BMKG karantina, Duitku idempoten HMAC, no hardcode secret, partner hanya via admin
+Acuan: plan docs HACKATHON COMMIT GUIDE, identitas Git diatur pengguna melalui git config, credential md hanya untuk token Vercel plus URL repo, aturan AGENTS md di source: BMKG karantina, Duitku idempoten HMAC, no hardcode secret, partner hanya via admin
 
 Deploy: Tidak di 00. Siapkan auth di 00, siapkan config di 17, push tiap prompt plus push final di 19 memicu auto deploy Vercel, deploy manual eksplisit di 20 vercel prod.
 
@@ -19,23 +19,23 @@ Kondisi aktual: SOURCE aktif folder bersamakita web di Bersama Kita Hackaton, br
 5. Tiap prompt sudah ada command singkat, timestamp, verifikasi, laporan wajib.
 6. Jika agent hanya menjelaskan, balas: Eksekusi sekarang via shell, jangan hanya menjelaskan.
 
-Path aktual: SOURCE sama dengan home alvinjauhari Documents Bersama Kita Hackaton bersamakita web STAGING sama dengan home alvinjauhari Documents Bersama Kita Hackaton Hackaton ENV kanakaproject1 CRED sama dengan home alvinjauhari Documents Bersama Kita Hackaton Hackaton ENV plan docs credential md Gunakan path lengkap dengan kutip di shell. Jangan salin CRED atau env atau vercel atau backup ke STAGING. Mask token dengan MASKED di laporan.
+Path aktual: SOURCE sama dengan home alvinjauhari Documents Bersama Kita Hackaton bersamakita web STAGING sama dengan home alvinjauhari Documents Bersama Kita Hackaton Hackaton ENV kanakaproject1 CRED sama dengan home alvinjauhari Documents Bersama Kita Hackaton Hackaton ENV plan docs credential md Gunakan path lengkap dengan kutip di shell. Jangan salin CRED atau env atau vercel atau backup ke STAGING. CRED hanya untuk Vercel, bukan autentikasi GitHub. Jangan lanjut commit atau push sebelum user mengganti nama dan email placeholder dengan identitas sebenarnya.
 
 ---
 
-## B. PROMPT 00 - SETUP STAGING DAN CEK AUTH, TANPA DEPLOY
+## B. PROMPT 00 - SETUP STAGING DAN IDENTITAS GIT, TANPA DEPLOY
 
 Salin ke agent:
 
 TESTTST
 
-TUGAS: Setup staging bersih dan cek auth GitHub Vercel. Eksekusi via shell sekarang.
+TUGAS: Setup staging bersih, minta user mengatur identitas Git, dan cek auth Vercel. Jangan gunakan access token untuk GitHub. Eksekusi via shell sekarang.
 
 Gunakan shell ini, singkat dan jelas:
 
-SOURCE="/home/alvinjauhari/Documents/Bersama Kita Hackaton/bersamakita web" STAGING="/home/alvinjauhari/Documents/Bersama Kita Hackaton/Hackaton ENV/kanakaproject1" CRED="/home/alvinjauhari/Documents/Bersama Kita Hackaton/Hackaton ENV/plan docs/credential.md" ls "$SOURCE/package.json" "$SOURCE/server/app.ts" "$SOURCE/src/config/firebase.ts" "$SOURCE/vercel.json" "$CRED" ls -1 "$SOURCE/docs" ; ls -1 "$SOURCE/docs/hackaton" ; cat "$SOURCE/.gitignore" git -C "$SOURCE" log --oneline -3 ; git -C "$SOURCE" status --short GITHUB\_TOKEN="$(grep -oE 'ghp\_\[A-Za-z0-9\]+' "$CRED" \| head -n 1)" VERCEL\_TOKEN="$(grep -oE 'vcp\_\[A-Za-z0-9\]+' "$CRED" \| head -n 1)" REPO\_URL="$(grep -oE 'https://github.com/\[^ \]+.git' "$CRED" \| head -n 1)" echo "GH ${GITHUB\_TOKEN: -4} Vercel ${VERCEL\_TOKEN: -4} $REPO\_URL" mkdir -p "$STAGING" ; cd "$STAGING" git init 2\>/dev/null ; git branch -M main cp "$SOURCE/AGENTS.md" . ; ls AGENTS.md REPO\_PATH="$(echo "$REPO\_URL" \| sed -E 's\|https://github.com/\|\|; s\|.git$\|\|')" git remote get-url origin 2\>/dev/null \&\& git remote set-url origin "https://${GITHUB\_TOKEN}@github.com/${REPO\_PATH}.git" \|\| git remote add origin "https://${GITHUB\_TOKEN}@github.com/${REPO\_PATH}.git" git remote -v \| sed -E 's/(ghp\_)\[^@\]+/...MASKED@/g' npx -y vercel@latest whoami --token="$VERCEL\_TOKEN" \| head -n 5 pwd ; git status --short ; git branch --show-current
+SOURCE="/home/alvinjauhari/Documents/Bersama Kita Hackaton/bersamakita web" STAGING="/home/alvinjauhari/Documents/Bersama Kita Hackaton/Hackaton ENV/kanakaproject1" CRED="/home/alvinjauhari/Documents/Bersama Kita Hackaton/Hackaton ENV/plan docs/credential.md" REPO\_URL="https://github.com/malvinjauhari/projekkanaka1.git" ls "$SOURCE/package.json" "$SOURCE/server/app.ts" "$SOURCE/src/config/firebase.ts" "$SOURCE/vercel.json" "$CRED" ls -1 "$SOURCE/docs" ; ls -1 "$SOURCE/docs/hackaton" ; cat "$SOURCE/.gitignore" git -C "$SOURCE" log --oneline -3 ; git -C "$SOURCE" status --short git config --global user.name "belumdiset" git config --global user.email "belumdiset" echo "WAJIB: minta user mengganti belumdiset dengan nama dan email Git sebenarnya sebelum commit atau push" git config --global --get user.name ; git config --global --get user.email VERCEL\_TOKEN="$(grep -oE 'vcp\_\[A-Za-z0-9\]+' "$CRED" \| head -n 1)" mkdir -p "$STAGING" ; cd "$STAGING" git init 2\>/dev/null ; git branch -M main cp "$SOURCE/AGENTS.md" . ; ls AGENTS.md git remote get-url origin 2\>/dev/null \&\& git remote set-url origin "$REPO\_URL" \|\| git remote add origin "$REPO\_URL" git remote -v npx -y vercel@latest whoami --token="$VERCEL\_TOKEN" \| head -n 5 pwd ; git status --short ; git branch --show-current
 
-LAPOR: file inti ada, docs ada, AGENTS ada, token suffix 4 char saja, remote masked, whoami, status.
+LAPOR: file inti ada, docs ada, AGENTS ada, identitas Git saat ini, pengingat agar user mengganti placeholder, remote tanpa token, whoami Vercel, status. Hentikan proses sampai user memberi nama dan email Git sebenarnya.
 
 ---
 
@@ -273,7 +273,7 @@ Salin ke agent:
 
 TUGAS: Verifikasi lalu push. Jangan push jika build gagal.
 
-cd "$STAGING" git log --oneline --format="%h %ai %s" \| head -n 20 git log --oneline \| wc -l ls src/types/index.ts firestore.rules server/app.ts src/config/firebase.ts vercel.json git status --short git ls-files \| grep -E "env$\|credential\|vercel/\|blueprint" \|\| echo "OK bersih" npm install \| tail -n 3 npm run build \| tail -n 10 npx tsc --noEmit git remote -v \| sed -E 's/(ghp\_)\[^@\]+/...MASKED@/g' git push -u origin main git push origin develop
+cd "$STAGING" test "$(git config --global --get user.name)" != "belumdiset" \&\& test "$(git config --global --get user.email)" != "belumdiset" \|\| { echo "STOP: minta user set nama dan email Git sebenarnya"; exit 1; } git config --global --get user.name ; git config --global --get user.email git log --oneline --format="%h %ai %an <%ae> %s" \| head -n 20 git log --oneline \| wc -l ls src/types/index.ts firestore.rules server/app.ts src/config/firebase.ts vercel.json git status --short git ls-files \| grep -E "env$\|credential\|vercel/\|blueprint" \|\| echo "OK bersih" npm install \| tail -n 3 npm run build \| tail -n 10 npx tsc --noEmit git remote -v git push -u origin main git push origin develop
 
 LAPOR: hasil build dan push. Jika sukses tulis: Push sukses, cek Dashboard Vercel lalu lanjut 20.
 
@@ -301,7 +301,7 @@ CATATAN: project json SOURCE masih bersamakita lama. STAGING tidak bawa folder v
 
 ## Y. ALUR DEPLOY
 
-00 baca credential pasang origin malvinjauhari projekkanaka1 pakai PAT plus cek vercel whoami, tanpa deploy. 17 commit vercel json firebase json index, belum deploy. 19 build vite plus tsc plus push main develop picu auto deploy jika GitHub connect Vercel. 20 vercel prod pakai token ke kanakaproject1, verifikasi curl 200. Jika Dashboard belum ada kanakaproject1, buat baru atau vercel link project kanakaproject1 sebelum 20 OPSI B.
+00 set placeholder identitas Git, ingatkan user menggantinya, pasang origin malvinjauhari projekkanaka1 tanpa token plus cek vercel whoami, tanpa deploy. 17 commit vercel json firebase json index, belum deploy. 19 build vite plus tsc plus push main develop picu auto deploy jika GitHub connect Vercel. 20 vercel prod pakai token ke kanakaproject1, verifikasi curl 200. Jika Dashboard belum ada kanakaproject1, buat baru atau vercel link project kanakaproject1 sebelum 20 OPSI B.
 
 ---
 
